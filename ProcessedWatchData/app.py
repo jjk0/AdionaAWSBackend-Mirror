@@ -14,22 +14,24 @@ def lambda_handler(event, context):
     processed_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     trained_model_bucket = "adiona-trained-models"
     
-    id = processed_key[0:4]
+    id = processed_key[0:5]
     sensor_template_str = Template('$ID/accData.json')
     sensor_file_key = sensor_template_str.substitute(ID=id)
     truth_template_str = Template('$ID/agitationGroundTruth.json')
     truth_file_key = truth_template_str.substitute(ID=id)
     model_template_str = Template('$ID/trainedModel.pkl')
     model_file_key = model_template_str.substitute(ID=id)
+    quantizer_template_str = Template('$ID/fittedQuantizer.pkl')
+    quantizer_file_key = quantizer_template_str.substitute(ID=id)
 
    
     try: 
         raw_response = s3.get_object(Bucket=processed_bucket, Key=processed_key)
         raw_content = raw_response["Body"]
         raw_jsonobj = json.loads(raw_content.read())
-        print('JSON from raw s3 retrieved:', raw_jsonobj)
+        # print('JSON from raw s3 retrieved:', raw_jsonobj)
 
-        agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key)
+        agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key)
 
         print('FUNCTION EXECUTED SUCCESSFULLY:', agitation_model)
         

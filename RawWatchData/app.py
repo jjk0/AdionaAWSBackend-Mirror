@@ -43,6 +43,7 @@ def lambda_handler(event, context):
         raw_content = raw_response["Body"]
         raw_jsonobj = json.loads(raw_content.read())
         print('JSON from raw s3 retrieved:', raw_jsonobj)
+        print("aloha")
 
         acc_results = acc_function(processed_bucket, acc_file_key, raw_jsonobj)
         print('ACC RESULTS:', acc_results)
