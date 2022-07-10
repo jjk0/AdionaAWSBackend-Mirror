@@ -1,0 +1,9 @@
+{
+    "episodes": 
+    [
+        {"asleep": "True", "start_time": "2022-06-12T10:33:25", "end_time": "2022-06-13T10:33:25"},
+        {"asleep": "False", "start_time": "2022-06-12T10:33:25", "end_time": "2022-06-13T10:33:25"}, 
+        {"asleep": "True", "start_time": "2022-06-12T10:33:25", "end_time": "2022-06-13T10:33:25"}, 
+        {"asleep": "False", "start_time": "2022-06-12T10:33:25", "end_time": "2022-06-13T10:33:25"}
+    ]
+}
