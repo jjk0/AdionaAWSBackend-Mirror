@@ -6,8 +6,6 @@ from timesmash import Quantizer, SymbolicDerivative
 from sklearn.ensemble import RandomForestClassifier
 import time 
 import datetime 
-# from timesmash import SymbolicDerivative, Quantizer
-# import pandas as pd 
 s3 = boto3.client('s3')
 
 def train_agitation_function(from_bucket, model_bucket, sensor_data_key, ground_truth_data_key, model_file_key, quantizer_file_key): 
