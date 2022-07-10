@@ -12,15 +12,31 @@ def acc_function(bucket, key, data):
     new_z = data.get("acceleration", {}).get("z_val", None)
     freq = data.get("acceleration", {}).get("frequency", None)
     str_date = data.get("acceleration", {}).get("startQueryTime", None) 
-    new_date = parser.parse(str_date)
+    start_time = parser.parse(str_date)
     new_timestamps = []
     time_val = 0 
+    unix_start = 0
 
     for x in new_x: 
-        incremented_date = new_date + timedelta(seconds = time_val/freq)
-        unix = time.mktime(incremented_date.timetuple())
-        new_timestamps.append(unix)
-        time_val += 1 
+        if unix_start ==0: 
+            incremented_time = unix_start + timedelta(milliseconds=time_val/freq)
+            new_timestamps.append(incremented_time)
+            time_val += 1000
+            print('timeval:', time_val)
+        else: 
+            unix_start = time.mktime(start_time.timetuple())*1000
+            new_timestamps.append(unix_start)
+            time_val = 1000
+    print('time val array', time_val)
+
+        # unix_milli = time.mktime(incremented_date.timetuple())*1000
+        # print("here is unix date", unix_milli)
+        # unix_milli = unix_milli 1000/freq
+        # incremented_date = start_time + timedelta(milliseconds = time_val/freq)
+        # print("here is incremented date", incremented_date)
+        # unix_milli = time.mktime(incremented_date.timetuple())*1000
+        # new_timestamps.append(unix_milli)
+        # time_val += 1000
 
     try: 
         processed_response = s3.get_object(Bucket=bucket, Key=key)

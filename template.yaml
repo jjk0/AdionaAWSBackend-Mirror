@@ -17,6 +17,8 @@ Resources:
       CodeUri: RawWatchData/
       Handler: app.lambda_handler
       Runtime: python3.9
+      # Layers: 
+      #   - 
       Architectures:
         - x86_64
       Policies:
@@ -46,6 +48,37 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ProcessedWatchData/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Policies:
+        - Statement:
+          - Sid: LogEventsFromLambda
+            Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: '*'
+        - Statement:
+          - Sid: GetObjectFromS3
+            Effect: Allow
+            Action: 
+            - s3:GetObject
+            Resource: 'arn:aws:s3:::*'
+        - Statement:
+          - Sid: WriteObjectToS3
+            Effect: Allow
+            Action:
+            - s3:PutObject
+            - s3:DeleteObject
+            Resource: 'arn:aws:s3:::adiona-trained-models/*'
+
+  TestImport:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: TestImport/
       Handler: app.lambda_handler
       Runtime: python3.9
       Architectures:

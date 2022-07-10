@@ -1,0 +1,61 @@
+############# HOW TO RUN AWS LAMBDA FUNCTIONS IN DOCKER CONTAINERS ################
+
+Setup: 
+    Download (if you don't have already): 
+        AWS CLI 
+        SAM (see github readme)
+        Docker 
+        Postman (way easier than curl) 
+
+Overview: 
+    The file "Dockerfile" configures a docker image with an AWS python template
+    Dockerfile also grabs all dependencies (in our case, Pandas, NumPy, Scikit-learn, Timesmash, Requests)
+
+Using it: 
+    To test function, you need to build  docker image. Our image name in AWS is "imports". From terminal: 
+        > docker build -t <WHATEVER YOU WANT TO NAME YOUR IMAGE> .   
+        > docker run -p 9000:8080 <WHATEVER YOU WANT TO NAME YOUR IMAGE>
+    If you haven't set up AWS credentials yet, go to the root directory for main user: 
+        > docker run -p 9000:8080 -v <PATH TO AWS CREDENTIALS> <WHATEVER YOU WANT TO NAME YOUR IMAGE>
+        For example: 
+            > docker run -p 9000:8080 -v c:\Users\joshi\.aws\credentials:/root/.aws/credentials imports
+    Copy the following link to Postman as a POST request: 
+        > http://localhost:9000/2015-03-31/functions/function/invocations
+        Then copy the code from an event file and enter it into the body of the postman request 
+        Code execution shows up in the terminal where you executed docker run and Postman UI 
+    Alternatively, using curl: 
+        > curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '<YOUR REQUEST>'
+    If you're using TestImport and want to try curl: 
+        > curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d "{}"
+        That might not work on some systems, so do this instead then: 
+        > curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d "{"""msg""":"""hello"""}"
+    To check whether all packages/files imported correctly: 
+        > docker run -it --entrypoint /bin/bash -p 9000:8080 imports 
+        > cd /var/task
+        > ls 
+        If interested in sub-folder: > cd <subfolder name> 
+
+
+
+############# HOW TO PUSH FUNCTIONS TO AWS ################
+
+Overview: 
+    When you push an image, you push from the function's directory that you want to push an image for
+    If you're pushing a new image, you want to create a new EC2 repository: 
+        1) Go to AWS management console and search for EC2
+        2) Select repositories and create new repository 
+        3) View push commands where you can replace the following with the specific commands 
+
+Using it: 
+    1) Make sure your terminal has given Docker ability to push to AWS: 
+        > aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 779792650170.dkr.ecr.us-east-1.amazonaws.com
+    2) Now do the following: 
+        > docker build -t <IMAGE NAME> .
+        In the case of the RawWatchData function: 
+            > docker build -t imports .
+        > docker tag imports:latest 779792650170.dkr.ecr.us-east-1.amazonaws.com/imports:latest
+    # To push the final image to an EC2 repository for use with lambda functions: 
+        > docker push 779792650170.dkr.ecr.us-east-1.amazonaws.com/imports:latest
+    3) MAKE SURE WHEN YOU PUSH THAT YOU ASSIGN /tmp AS WORKDIR IN AWS!!!!! OTHERWISE, IT WON'T WORK. 
+
+Official documentation: https://docs.aws.amazon.com/lambda/latest/dg/images-create.html 

@@ -1,9 +1,12 @@
 import json
+from re import template
 import urllib.parse
 import boto3
 from string import Template 
-from train_agitation import train_agitation_function
-
+# from helpers.train_agitation import train_agitation_function
+# from helpers.sleep_algorithm import sleep_analysis_function
+# from helpers.tips import tips_function
+from helpers.create_agitation_master import create_agitation_master_file
 
 print('Loading function')
 
@@ -12,7 +15,26 @@ s3 = boto3.client('s3')
 def lambda_handler(event, context):
     processed_bucket = event['Records'][0]['s3']['bucket']['name']
     processed_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
-    trained_model_bucket = "adiona-trained-models"
+    mobile_bucket = "mobile-app-ready-data"
+    
+    print("processed key", processed_key)
+    id = processed_key[0:5]
+
+    def create_string(filename): 
+        template_str = Template('$ID/$filename')
+        file_key = template_str.substitute(ID=id, filename=filename)
+        return file_key
+
+    def get_file(bucket, file_key): 
+        try: 
+            raw_response = s3.get_object(Bucket=bucket, Key=file_key)
+            raw_content = raw_response["Body"]
+            processed_bucket_data = json.loads(raw_content.read())
+            # print('JSON from raw s3 retrieved:', processed_bucket_data)
+            return processed_bucket_data
+        except Exception as e: 
+            print(e)
+            print("The ", file_key, " file does not exist.")
     
     id = processed_key[0:5]
     sensor_template_str = Template('$ID/accData.json')
@@ -33,7 +55,6 @@ def lambda_handler(event, context):
 
         agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key)
 
-        print('FUNCTION EXECUTED SUCCESSFULLY:', agitation_model)
         
     except Exception as e:
         print(e)
