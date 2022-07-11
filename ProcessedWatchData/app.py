@@ -3,7 +3,7 @@ from re import template
 import urllib.parse
 import boto3
 from string import Template 
-# from helpers.train_agitation import train_agitation_function
+from helpers.train_agitation import train_agitation_function
 # from helpers.sleep_algorithm import sleep_analysis_function
 # from helpers.tips import tips_function
 from helpers.create_agitation_master import create_agitation_master_file
@@ -16,6 +16,7 @@ def lambda_handler(event, context):
     processed_bucket = event['Records'][0]['s3']['bucket']['name']
     processed_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     mobile_bucket = "mobile-app-ready-data"
+    trained_model_bucket = "adiona-trained-models"
     
     print("processed key", processed_key)
     id = processed_key[0:5]

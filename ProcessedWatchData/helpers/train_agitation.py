@@ -19,8 +19,8 @@ def train_agitation_function(from_bucket, model_bucket, sensor_data_key, ground_
         processed_sensor_data = raw_sensor_data["Body"]
         raw_ground_truth_data = s3.get_object(Bucket=from_bucket, Key=ground_truth_data_key)
         processed_ground_truth_data = raw_ground_truth_data["Body"]
-        sensor_data = json.loads(processed_ground_truth_data.read())
-        ground_truth_data = json.loads(processed_sensor_data.read())
+        sensor_data = json.loads(processed_sensor_data.read())
+        ground_truth_data = json.loads(processed_ground_truth_data.read())['ground_truth']
         print('Sensor data retrieved:', sensor_data)
         print('Ground truth data retrieved:', ground_truth_data)
 
@@ -46,6 +46,8 @@ def train_agitation_function(from_bucket, model_bucket, sensor_data_key, ground_
         labels = [any([(ts >= acc_ts and ts <= acc_ts + 50) \
             for acc_ts in unix_agitation_timestamps]) for ts in acc_data['timestamps']]
 
+        print("HERE")
+
         # quantize 
         _qtz = Quantizer(n_quantizations = 2) 
         quantized_train = _qtz.\
@@ -57,6 +59,8 @@ def train_agitation_function(from_bucket, model_bucket, sensor_data_key, ground_
         # train_features, _ = SymbolicDerivative().fit_transform(
         #     train=q_train, test=None, label=labels
         # ) 
+
+        print("HERE 2")
 
         model = RandomForestClassifier(
             n_estimators=1000,
