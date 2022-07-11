@@ -10,39 +10,26 @@ def acc_function(bucket, key, data):
     new_x = data.get("acceleration", {}).get("x_val", None)
     new_y = data.get("acceleration", {}).get("y_val", None)
     new_z = data.get("acceleration", {}).get("z_val", None)
-    freq = data.get("acceleration", {}).get("frequency", None)
+    freq = int(data.get("acceleration", {}).get("frequency", None))
     str_date = data.get("acceleration", {}).get("startQueryTime", None) 
     start_time = parser.parse(str_date)
     new_timestamps = []
     time_val = 0 
-    unix_start = 0
+    unix_time = float(time.mktime(start_time.timetuple())*1000)
 
     for x in new_x: 
-        if unix_start ==0: 
-            incremented_time = unix_start + timedelta(milliseconds=time_val/freq)
-            new_timestamps.append(incremented_time)
-            time_val += 1000
-            print('timeval:', time_val)
-        else: 
-            unix_start = time.mktime(start_time.timetuple())*1000
-            new_timestamps.append(unix_start)
-            time_val = 1000
-    print('time val array', time_val)
-
-        # unix_milli = time.mktime(incremented_date.timetuple())*1000
-        # print("here is unix date", unix_milli)
-        # unix_milli = unix_milli 1000/freq
-        # incremented_date = start_time + timedelta(milliseconds = time_val/freq)
-        # print("here is incremented date", incremented_date)
-        # unix_milli = time.mktime(incremented_date.timetuple())*1000
-        # new_timestamps.append(unix_milli)
-        # time_val += 1000
+        unix_time += time_val/freq*1000
+        new_timestamps.append(unix_time)
+        time_val += 1000
+    print('time val array', new_timestamps)
 
     try: 
         processed_response = s3.get_object(Bucket=bucket, Key=key)
         processed_content = processed_response["Body"]
         processed_jsonobj = json.loads(processed_content.read())
-        print('Sensor JSON from processed s3 retrieved:', processed_jsonobj)
+        # print('Sensor JSON from processed s3 retrieved:', processed_jsonobj)
+        print('Sensor JSON from processed s3 retrieved:')
+
         old_x = processed_jsonobj.get("acceleration", {}).get("x_val", None) 
         old_y = processed_jsonobj.get("acceleration", {}).get("y_val", None) 
         old_z = processed_jsonobj.get("acceleration", {}).get("z_val", None)
@@ -60,6 +47,7 @@ def acc_function(bucket, key, data):
                 "timestamps": total_timestamps
             },
         }
+        print('data successfully aggregated.')
 
     except: 
         aggregate_json = {

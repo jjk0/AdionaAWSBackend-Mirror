@@ -27,7 +27,7 @@
             "arn": "arn:aws:s3:::processed-adiona-watch-app-data"
           },
           "object": {
-            "key": "1234/accData.json",
+            "key": "12345/accData.json",
             "size": 1024,
             "eTag": "0123456789abcdef0123456789abcdef",
             "sequencer": "0A1B2C3D4E5F678901"

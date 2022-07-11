@@ -42,7 +42,9 @@ Resources:
             Action:
             - s3:PutObject
             - s3:DeleteObject
-            Resource: 'arn:aws:s3:::processed-adiona-watch-app-data/*'
+            # Resource: 'arn:aws:s3:::processed-adiona-watch-app-data/*'
+            Resource: 'arn:aws:s3:::*'
+
 
   ProcessedWatchData:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
