@@ -12,7 +12,7 @@ Overview:
     Dockerfile also grabs all dependencies (in our case, Pandas, NumPy, Scikit-learn, Timesmash, Requests)
 
 Using it: 
-    To test function, you need to build  docker image. Our image name in AWS is "imports". From terminal: 
+    To test function, you need to build  docker image. Our image name in AWS is "imports". From root dir of function you want to run: 
         > docker build -t <WHATEVER YOU WANT TO NAME YOUR IMAGE> .   
         > docker run -p 9000:8080 <WHATEVER YOU WANT TO NAME YOUR IMAGE>
     If you haven't set up AWS credentials yet, go to the root directory for main user: 
