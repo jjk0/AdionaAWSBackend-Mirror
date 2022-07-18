@@ -44,11 +44,11 @@ def lambda_handler(event, context):
         raw_response = s3.get_object(Bucket=raw_bucket, Key=raw_key)
         raw_content = raw_response["Body"]
         raw_jsonobj = json.loads(raw_content.read())
-        print('JSON from raw s3 retrieved:', raw_jsonobj)
+        print('JSON from raw s3 retrieved')
         print("aloha")
 
-        acc_results = acc_function(processed_bucket, acc_file_key, raw_jsonobj)
-        print('ACC RESULTS:', acc_results)
+        # acc_results = acc_function(processed_bucket, acc_file_key, raw_jsonobj)
+        # print('ACC RESULTS:', acc_results)
 
         # hr_results = hr_function(processed_bucket, hr_file_key, raw_jsonobj)
         # print('HEART RATE RESULTS:', hr_results)
@@ -62,7 +62,7 @@ def lambda_handler(event, context):
         # lifestyle_results = lifestyle_function(processed_bucket, life_file_key, raw_jsonobj)
         # print('LIFESTYLE RESULTS:', lifestyle_results)
 
-        agitation_results = agitation_function(mobile_bucket, alg_file_key, quantizer_file_key, ag_ground_truth_file_key, ag_displayed_file_key, raw_jsonobj)
+        agitation_results = agitation_function(processed_bucket, alg_file_key, quantizer_file_key, ag_ground_truth_file_key, ag_displayed_file_key, raw_jsonobj)
         # print('AGITATION RESULTS:', agitation_results)
 
         # print('RAW WATCH DATA FUNCTION RAN.')

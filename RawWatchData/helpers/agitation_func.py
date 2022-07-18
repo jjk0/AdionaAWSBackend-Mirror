@@ -3,6 +3,7 @@ from operator import truediv
 import boto3
 import pickle 
 from datetime import timedelta
+import datetime 
 from dateutil import parser
 import time 
 import pandas as pd 
@@ -11,6 +12,8 @@ s3 = boto3.client('s3')
 def agitation_function(bucket, trained_model_key, quantizer_file_key, ground_truth_key, displayed_data_key, data): 
 
     try: 
+        print(bucket) 
+        print(ground_truth_key) 
         ground_truth = s3.get_object(Bucket=bucket, Key=ground_truth_key)
         processed_ground_truth = ground_truth["Body"]
         json_ground_truth = json.loads(processed_ground_truth.read())
@@ -26,23 +29,24 @@ def agitation_function(bucket, trained_model_key, quantizer_file_key, ground_tru
             new_z = data.get("acceleration", {}).get("z_val", None)
             freq = data.get("acceleration", {}).get("frequency", None)
             str_date = data.get("acceleration", {}).get("startQueryTime", None) 
+            if not str_date: 
+                str_date = str(datetime.datetime.now() ) 
             new_date = parser.parse(str_date)
             new_timestamps = []
             time_val = 0 
 
-            for x in new_x: 
-                incremented_date = new_date + timedelta(seconds = time_val/freq)
-                unix = time.mktime(incremented_date.timetuple())
-                new_timestamps.append(unix)
-                time_val += 1 
+            # for x in new_x: 
+            #     incremented_date = new_date + timedelta(seconds = time_val/freq)
+            #     unix = time.mktime(incremented_date.timetuple())
+            #     new_timestamps.append(unix)
+            #     time_val += 1 
 
             # retrieve model and run processed data through model below 
             try: 
                 pickled_qtz = s3.get_object(Bucket="adiona-trained-models", Key=quantizer_file_key)
                 pickled_ag_algorithm = s3.get_object(Bucket="adiona-trained-models", Key=trained_model_key)
-
-                _qtz = pickle.loads(pickled_qtz)
-                model = pickle.loads(pickled_ag_algorithm)
+                _qtz = pickle.loads(pickled_qtz["Body"].read())
+                model = pickle.loads(pickled_ag_algorithm["Body"].read())
 
                 test_data = {
                     'x_val': new_x, 
@@ -60,11 +64,13 @@ def agitation_function(bucket, trained_model_key, quantizer_file_key, ground_tru
                 predicted_labels = model.predict(final_test)
 
                 if sum(predicted_labels) > 0: 
+                    print("predicted agitation")
                     return (True, str_date) 
                 else: 
                     return (False, str_date)
 
-            except: 
+            except Exception as e:
+                print(e)
                 print('No trained agitation model available.')
                 return 
         
