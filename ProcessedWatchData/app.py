@@ -53,7 +53,7 @@ def lambda_handler(event, context):
         raw_jsonobj = json.loads(raw_content.read())
         # print('JSON from raw s3 retrieved:', raw_jsonobj)
 
-        agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key)
+        # agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key)
 
         
     except Exception as e:
