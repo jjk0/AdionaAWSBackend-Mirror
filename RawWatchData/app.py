@@ -4,10 +4,10 @@ import urllib.parse
 import boto3
 from string import Template 
 from helpers.acc_func import acc_function 
-from helpers.hr_func import hr_function 
-from helpers.res_func import res_function 
-from helpers.lifestyle_func import lifestyle_function 
-from helpers.agitation_func import agitation_function
+# from helpers.hr_func import hr_function 
+# from helpers.res_func import res_function 
+# from helpers.lifestyle_func import lifestyle_function 
+# from helpers.agitation_func import agitatiocd n_function
 # import pandas as pd 
 # import numpy as np
 # from sklearn import datasets
@@ -20,7 +20,7 @@ print('Loading function')
 s3 = boto3.client('s3')
 
 def lambda_handler(event, context):
-    raw_bucket = event['Records'][0]['s3']['bucket']['name']
+    raw_bucket = event["Records"][0]["s3"]["bucket"]["name"]
     raw_key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
     processed_bucket = "processed-adiona-watch-app-data"
     mobile_bucket = "mobile-app-ready-data"
