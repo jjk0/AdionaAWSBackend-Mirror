@@ -8,12 +8,12 @@ from timesmash import SymbolicDerivative
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import datasets
 # from test_nest import test
-
 print('Loading function')
 
 s3 = boto3.client('s3')
 
 def handler(event, context):
+
     print('Let us test Timesmash. See below.')
     train = [[1, 0, 1, 0, 1, 0], [1, 1, 0, 1, 1, 0]]
     train_label = [[0], [1]]
@@ -33,15 +33,15 @@ def handler(event, context):
     val = np.unique(iris_y)
     print('sci kit learn worked too!', val)
 
-    # print('does nesting work?')
-    # values = 'placeholder'
-    # try: 
-    #     confirm = test(values)
-    #     print('if you saw s is here, then yes!', confirm)
-    # except Exception as e: 
-    #     print(e)
-    #     print('something went wrong')
-    #     raise e 
+    print('does nesting work?')
+    values = 'placeholder'
+    try: 
+        confirm = test(values)
+        print('if you saw s is here, then yes!', confirm)
+    except Exception as e: 
+        print(e)
+        print('something went wrong')
+        raise e 
 
     return {
         'statusCode': 200,
