@@ -19,8 +19,8 @@ manifest_hash = ""
 packagetype = "Zip"
 functions = ["ProcessedWatchData"]
 
-[function_build_definitions.9ce772a4-ee51-4f43-ad84-d7581fcfba62]
-codeuri = "C:\\Users\\joshi\\Local_docs\\AdionaAWSBackend\\TestImport"
+[function_build_definitions.fec56f99-01bb-498b-a241-3fb010d0235e]
+codeuri = "/Users/Katherine/Documents/College stuff/adiona/code/aws_backend/AdionaAWSBackend/TestImport"
 runtime = "python3.9"
 architecture = "x86_64"
 handler = "app.lambda_handler"
