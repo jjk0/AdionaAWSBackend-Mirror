@@ -105,3 +105,74 @@ Resources:
             - s3:PutObject
             - s3:DeleteObject
             Resource: 'arn:aws:s3:::adiona-trained-models/*'
+
+  S3WatchData:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: processed-watch-data-cloudformation
+      VersioningConfiguration:
+        Status: Suspended
+      CorsConfiguration:
+        CorsRules:
+          -
+            AllowedOrigins:
+              - '*'
+            AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - GET
+              - PUT
+              - POST
+              - DELETE
+              - HEAD
+            MaxAge: 3000
+
+  S3ToDynamoDBTrigger:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: S3ToDynamoDBTrigger/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Architectures:
+        - x86_64
+      Events:
+        FileUpload:
+          Type: S3
+          Properties:
+            Bucket: !Ref S3WatchData
+            Events: s3:ObjectCreated:*
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: suffix
+                    Value: '.json'
+      Policies:
+        - Statement:
+          - Sid: LogEventsFromLambda
+            Effect: Allow
+            Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
+        - Statement:
+          - Sid: GetObjectFromS3
+            Effect: Allow
+            Action: 
+              - s3:GetObject
+            Resource: 'arn:aws:s3:::*'
+          - Sid: PutObjectsToDynamoDB
+            Effect: Allow
+            Action: 
+              - dynamodb:*
+            Resource: '*'
+          - Sid: AWSPinpointEndpointIntegration
+            Effect: Allow
+            Action: 
+              - mobiletargeting:*
+            Resource: '*'
+
+
+            
+
+            
