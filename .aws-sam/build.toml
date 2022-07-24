@@ -21,6 +21,7 @@ functions = ["ProcessedWatchData"]
 
 [function_build_definitions.927bb958-a540-4ce5-baa5-a6991b9904c0]
 codeuri = "/Users/laxmansharma/Work/AdionaMirror/AdionaAWSBackend/TestImport"
+
 runtime = "python3.9"
 architecture = "x86_64"
 handler = "app.lambda_handler"

@@ -3,13 +3,17 @@ from operator import truediv
 import boto3
 import pickle 
 from datetime import timedelta
+import datetime 
 from dateutil import parser
 import time 
+import pandas as pd 
 s3 = boto3.client('s3')
 
-def agitation_function(bucket, trained_model_key, ground_truth_key, displayed_data_key, data): 
+def agitation_function(bucket, trained_model_key, quantizer_file_key, ground_truth_key, displayed_data_key, data): 
 
     try: 
+        print(bucket) 
+        print(ground_truth_key) 
         ground_truth = s3.get_object(Bucket=bucket, Key=ground_truth_key)
         processed_ground_truth = ground_truth["Body"]
         json_ground_truth = json.loads(processed_ground_truth.read())
@@ -25,26 +29,48 @@ def agitation_function(bucket, trained_model_key, ground_truth_key, displayed_da
             new_z = data.get("acceleration", {}).get("z_val", None)
             freq = data.get("acceleration", {}).get("frequency", None)
             str_date = data.get("acceleration", {}).get("startQueryTime", None) 
+            if not str_date: 
+                str_date = str(datetime.datetime.now() ) 
             new_date = parser.parse(str_date)
             new_timestamps = []
             time_val = 0 
 
-            for x in new_x: 
-                incremented_date = new_date + timedelta(seconds = time_val/freq)
-                unix = time.mktime(incremented_date.timetuple())
-                new_timestamps.append(unix)
-                time_val += 1 
+            # for x in new_x: 
+            #     incremented_date = new_date + timedelta(seconds = time_val/freq)
+            #     unix = time.mktime(incremented_date.timetuple())
+            #     new_timestamps.append(unix)
+            #     time_val += 1 
 
             # retrieve model and run processed data through model below 
             try: 
-                ag_algorithm = s3.get_object(Bucket="adiona-trained-models", Key=trained_model_key)
-                processed_ag_algorithm = ag_algorithm["Body"]
-                # loaded_model = pickle.load(open(processed_ag_algorithm, 'rb'))
-                # result = loaded_model.score(x_data, y_data)
-                # https://cloud.google.com/ai-platform/prediction/docs/exporting-for-prediction#pickle
-                # https://datascience.stackexchange.com/questions/71880/upload-model-to-s3 
-                result = (True, "2022-06-12T10:33:25")
-            except: 
+                pickled_qtz = s3.get_object(Bucket="adiona-trained-models", Key=quantizer_file_key)
+                pickled_ag_algorithm = s3.get_object(Bucket="adiona-trained-models", Key=trained_model_key)
+                _qtz = pickle.loads(pickled_qtz["Body"].read())
+                model = pickle.loads(pickled_ag_algorithm["Body"].read())
+
+                test_data = {
+                    'x_val': new_x, 
+                    'y_val': new_y, 
+                    'z_val': new_z 
+                }
+                test_df = pd.DataFrame(test_data)
+
+                # TODO: should normalize in consistent fashion 
+                def normalize(df): 
+                    return (df - df.mean() / df.std() )
+                quantized_test = _qtz.transform(normalize(test_df))
+                final_test = pd.concat([q for q in quantized_test], axis=1)
+                # in future, add symbolic derivative 
+                predicted_labels = model.predict(final_test)
+
+                if sum(predicted_labels) > 0: 
+                    print("predicted agitation")
+                    return (True, str_date) 
+                else: 
+                    return (False, str_date)
+
+            except Exception as e:
+                print(e)
                 print('No trained agitation model available.')
                 return 
         
