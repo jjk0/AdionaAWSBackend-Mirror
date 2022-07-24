@@ -1,46 +1,46 @@
-test_vals = {
+testvals = {
   "oxygen_saturation" : {
     "values" : [
-
+      50, 60
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "respiratory_rate" : {
     "values" : [
-
+      14, 15
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "distance_walking_running" : {
     "values" : [
-
+      123, 156
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "active_energy_burned" : {
     "values" : [
-
+      123, 124
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "acceleration" : {
@@ -5531,7 +5531,8 @@ test_vals = {
       -0.0012664794921875,
       0.0008697509765625,
       -0.0009765625
-    ]
+    ],
+    "startQueryTime": "2022-07-22T02:46:43Z"
   },
   "six_minute_walk_test" : {
     "values" : [
@@ -5546,24 +5547,24 @@ test_vals = {
   },
   "heart_rate" : {
     "values" : [
-
+      80, 71
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "heart_rate_variability" : {
     "values" : [
-
+      0.115, 1.1
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "metaData" : {
@@ -5573,24 +5574,22 @@ test_vals = {
   },
   "step_count" : {
     "values" : [
-      134
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-      "2022-07-22T02:46:43Z"
     ]
   },
   "resting_heart_rate" : {
     "values" : [
-
+      0.115, 1.1
     ],
     "sources" : [
 
     ],
     "timestamps" : [
-
+      "2022-07-22T02:46:43Z", "2022-07-23T02:46:43Z"
     ]
   },
   "stair_descent_speed" : {
@@ -5639,5 +5638,8 @@ test_vals = {
   }
 }
 
-device_ID = test_vals.get("metaData", {}).get("device_ID", None)
-print(device_ID)
+val = testvals.get('metaData', {}).get("connectivity_status", None)
+print(val)
+newarr = []
+newarr.append(val)
+print(newarr)

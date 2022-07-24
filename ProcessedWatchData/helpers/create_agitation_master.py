@@ -5,6 +5,8 @@ from string import Template
 
 def create_agitation_master_file(bucket, all_agitation_files, master_key): 
 
+    # WILL NEED TO GET MASTER AGITATION FROM MOBILE READY? OR DYNAMO DIRECTLY
+
     try: 
         ground_truth_agitation = all_agitation_files[0]
         predicted_agitation = all_agitation_files[1]

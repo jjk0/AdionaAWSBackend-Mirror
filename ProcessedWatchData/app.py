@@ -1,3 +1,4 @@
+from concurrent.futures import process
 import json
 from re import template
 import urllib.parse
@@ -7,6 +8,10 @@ from helpers.train_agitation import train_agitation_function
 # from helpers.sleep_algorithm import sleep_analysis_function
 # from helpers.tips import tips_function
 from helpers.create_agitation_master import create_agitation_master_file
+
+
+##### NEED TO GET DYNAMODB DATA TO SEE MANUALLY UPLOADED AGITATION 
+##### SET UP SEPARATE LAMBDA ON DYNAMO TO WRITE TO MOBILE APP BUCKET 
 
 print('Loading function')
 
@@ -40,16 +45,27 @@ def lambda_handler(event, context):
             print("The ", file_key, " file does not exist.")
     
     id = processed_key[0:5]
-    sensor_template_str = Template('$ID/accData.json')
-    sensor_file_key = sensor_template_str.substitute(ID=id)
-    truth_template_str = Template('$ID/agitationGroundTruth.json')
-    truth_file_key = truth_template_str.substitute(ID=id)
-    model_template_str = Template('$ID/trainedModel.pkl')
-    model_file_key = model_template_str.substitute(ID=id)
-    quantizer_template_str = Template('$ID/fittedQuantizer.pkl')
-    quantizer_file_key = quantizer_template_str.substitute(ID=id)
-    derivative_template_str = Template('$ID/fittedDerivative.pkl')
-    derivative_file_key = derivative_template_str.substitute(ID=id)
+
+    # sensor_template_str = Template('$ID/accData.json')
+    # sensor_file_key = sensor_template_str.substitute(ID=id)
+    # truth_template_str = Template('$ID/agitationGroundTruth.json')
+    # truth_file_key = truth_template_str.substitute(ID=id)
+    # model_template_str = Template('$ID/trainedModel.pkl')
+    # model_file_key = model_template_str.substitute(ID=id)
+    # quantizer_template_str = Template('$ID/fittedQuantizer.pkl')
+    # quantizer_file_key = quantizer_template_str.substitute(ID=id)
+    # derivative_template_str = Template('$ID/fittedDerivative.pkl')
+    # derivative_file_key = derivative_template_str.substitute(ID=id)
+
+    sensor_file_key = create_string('accData.json')
+    truth_file_key = create_string('agitationGroundTruth.json')
+    model_file_key = create_string('trainedModel.pkl.json')
+    quantizer_file_key = create_string('fittedQuantizer.json')
+    derivative_file_key = create_string('fittedDerivative.json')
+    ag_ground_truth_file_key = create_string('agitationGroundTruth.json')
+    ag_displayed_file_key = create_string('predictedAgitation.json')
+    alg_file_key = create_string('trainedModel.pkl')
+    quantizer_file_key = create_string('fittedQuantizer.pkl')
    
     try: 
         raw_response = s3.get_object(Bucket=processed_bucket, Key=processed_key)
@@ -59,6 +75,8 @@ def lambda_handler(event, context):
 
         agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key, derivative_file_key)
 
+############## format datalist here ##########################
+        tips_results = tips_function(processed_bucket, mobile_bucket, datalist)
         
     except Exception as e:
         print(e)

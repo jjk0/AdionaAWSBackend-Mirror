@@ -11,7 +11,7 @@ def acc_function(bucket, key, data):
     new_y = data.get("acceleration", {}).get("y_val", None)
     new_z = data.get("acceleration", {}).get("z_val", None)
     freq = int(data.get("acceleration", {}).get("frequency", None))
-    str_date = data.get("acceleration", {}).get("startQueryTime", None) 
+    str_date = data.get("metaData", {}).get("startQueryTime", None) 
     start_time = parser.parse(str_date)
     new_timestamps = []
     time_val = 0 

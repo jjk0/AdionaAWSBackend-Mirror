@@ -4,9 +4,11 @@ import urllib.parse
 import boto3
 from string import Template 
 from helpers.acc_func import acc_function 
-# from helpers.hr_func import hr_function 
-# from helpers.res_func import res_function 
-# from helpers.lifestyle_func import lifestyle_function 
+from helpers.hr_func import hr_function 
+from helpers.res_func import res_function 
+from helpers.lifestyle_func import lifestyle_function 
+from helpers.location_func import location_function 
+from helpers.metadata_func import metadata_function 
 from helpers.agitation_func import agitation_function
 # import pandas as pd 
 # import numpy as np
@@ -35,6 +37,9 @@ def lambda_handler(event, context):
     acc_file_key = create_string('accData.json')
     hr_file_key = create_string('hrData.json')
     life_file_key = create_string('lifestyleData.json')
+    location_file_key = create_string('locationData.json')
+    res_file_key = create_string('respiratoryData.json')
+    metadata_file_key = create_string('metaData.json')
     ag_ground_truth_file_key = create_string('agitationGroundTruth.json')
     ag_displayed_file_key = create_string('predictedAgitation.json')
     alg_file_key = create_string('trainedModel.pkl')
@@ -47,25 +52,56 @@ def lambda_handler(event, context):
         print('JSON from raw s3 retrieved')
         print("aloha")
 
-        # acc_results = acc_function(processed_bucket, acc_file_key, raw_jsonobj)
-        # print('ACC RESULTS:', acc_results)
+        try: 
+            acc_results = acc_function(processed_bucket, acc_file_key, raw_jsonobj)
+            print('ACC RESULTS:', acc_results)
+        except Exception as e: 
+            print('error gathering acceleration data')
+            print(e)
+        
+        try: 
+            hr_results = hr_function(processed_bucket, hr_file_key, raw_jsonobj)
+            print('HEART RATE RESULTS:', hr_results)
+        except Exception as e: 
+            print('error gathering heart data')
+            print(e)
 
-        # hr_results = hr_function(processed_bucket, hr_file_key, raw_jsonobj)
-        # print('HEART RATE RESULTS:', hr_results)
+        try: 
+            res_results = res_function(processed_bucket, res_file_key, raw_jsonobj)
+            print('RESPIRATORY RESULTS:', res_results)
+        except Exception as e: 
+            print('error gathering respiratory data')
+            print(e)
 
-        # try: 
-        #     res_results = res_function(processed_bucket, res_file_key, raw_jsonobj)
-        #     print('RESPIRATORY RESULTS:', res_results)
-        # except: 
-        #     print('No respiratory sensor data available') 
+        try: 
+            lifestyle_results = lifestyle_function(processed_bucket, life_file_key, raw_jsonobj)
+            print('LIFESTYLE RESULTS:', lifestyle_results)
+        except Exception as e: 
+            print('error gathering lifestyle data')
+            print(e)
+        
+        try: 
+            location_results = location_function(processed_bucket, location_file_key, raw_jsonobj)
+            print('LOCATION RESULTS:', location_results)
+        except Exception as e: 
+            print('error gathering location data')
+            print(e)
 
-        # lifestyle_results = lifestyle_function(processed_bucket, life_file_key, raw_jsonobj)
-        # print('LIFESTYLE RESULTS:', lifestyle_results)
-
-        agitation_results = agitation_function(processed_bucket, alg_file_key, quantizer_file_key, ag_ground_truth_file_key, ag_displayed_file_key, raw_jsonobj)
-        # print('AGITATION RESULTS:', agitation_results)
-
-        # print('RAW WATCH DATA FUNCTION RAN.')
+        try: 
+            metadata_results = metadata_function(processed_bucket, metadata_file_key, raw_jsonobj)
+            print('METADATA RESULTS:', metadata_results)
+        except Exception as e: 
+            print('error gathering acceleration data')
+            print(e)
+        
+        try: 
+            agitation_results = agitation_function(processed_bucket, alg_file_key, quantizer_file_key, ag_ground_truth_file_key, ag_displayed_file_key, raw_jsonobj)
+            print('AGITATION RESULTS:', agitation_results)
+        except Exception as e: 
+            print('error doing agitation analysis')
+            print(e)
+            
+        print('RAW WATCH DATA FUNCTION RAN.')
 
         # s = pd.Series([1, 3, 5, np.nan, 6, 8])
         # print('pandas and numpy worked!', s)
