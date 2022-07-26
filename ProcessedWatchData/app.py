@@ -4,10 +4,10 @@ from re import template
 import urllib.parse
 import boto3
 from string import Template 
-from helpers.train_agitation import train_agitation_function
+# from helpers.train_agitation import train_agitation_function
 # from helpers.sleep_algorithm import sleep_analysis_function
-# from helpers.tips import tips_function
-from helpers.create_agitation_master import create_agitation_master_file
+from helpers.tips import tips_function
+# from helpers.create_agitation_master import create_agitation_master_file
 
 
 ##### NEED TO GET DYNAMODB DATA TO SEE MANUALLY UPLOADED AGITATION 
@@ -44,7 +44,6 @@ def lambda_handler(event, context):
             print(e)
             print("The ", file_key, " file does not exist.")
     
-    id = processed_key[0:5]
 
     # sensor_template_str = Template('$ID/accData.json')
     # sensor_file_key = sensor_template_str.substitute(ID=id)
@@ -71,12 +70,13 @@ def lambda_handler(event, context):
         raw_response = s3.get_object(Bucket=processed_bucket, Key=processed_key)
         raw_content = raw_response["Body"]
         raw_jsonobj = json.loads(raw_content.read())
-        # print('JSON from raw s3 retrieved:', raw_jsonobj)
+        print('JSON from raw s3 retrieved:', raw_jsonobj)
 
-        agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key, derivative_file_key)
+        # agitation_model = train_agitation_function(processed_bucket, trained_model_bucket, sensor_file_key, truth_file_key, model_file_key, quantizer_file_key, derivative_file_key)
 
 ############## format datalist here ##########################
-        tips_results = tips_function(processed_bucket, mobile_bucket, datalist)
+        # tips_results = tips_function(processed_bucket, mobile_bucket, datalist)
+        # print('tips results', tips_results)
         
     except Exception as e:
         print(e)

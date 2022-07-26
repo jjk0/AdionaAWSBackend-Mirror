@@ -1,27 +1,27 @@
 {
     "lifestyle_tips": {
-        "message": "Here is the message. ", 
+        "message": "Here is THE MESSAGEEEEEE. ", 
         "importance": 3, 
-        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups", 
+        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
     },
     "sleep_tips": {
-        "message": "Here is the message. ", 
+        "message": "Here is THE MESSAGEEEEEE. ", 
         "importance": 3, 
-        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups", 
+        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
     },
     "hr_tips": {
-        "message": "Here is the message. ", 
+        "message": "Here is THE MESSAGEEEEEE. ", 
         "importance": 2, 
-        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups", 
+        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
     },
     "respiratory_tips": {
-        "message": "Here is the message. ", 
+        "message": "Here is THE MESSAGEEEEEE. ", 
         "importance": 1, 
-        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups", 
+        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
     },
     "general_tips": {
-        "message": "Here is the message. ", 
+        "message": "Here is THE MESSAGEEEEEE. ", 
         "importance": 0, 
-        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups", 
-    },
+        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
+    }
 }
