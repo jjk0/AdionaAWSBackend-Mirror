@@ -3,12 +3,12 @@ import json
 import boto3
 s3 = boto3.client('s3')
 from string import Template 
-from tips.lifestyle_tips import lifestyle_tips_function
-from tips.heart_tips import heart_tips_function
-from tips.respiratory_tips import respiratory_tips_function
-from tips.sleep_tips import sleep_tips_function 
-from tips.agitation_tips import agitation_tips_function
-from tips.mobility_tips import mobility_tips_function
+# from tips.lifestyle_tips import lifestyle_tips_function
+# from tips.heart_tips import heart_tips_function
+# from tips.respiratory_tips import respiratory_tips_function
+# from tips.sleep_tips import sleep_tips_function 
+# from tips.agitation_tips import agitation_tips_function
+# from tips.mobility_tips import mobility_tips_function
 
 
 ########### TO DO: USE DYNAMO DATA TO IMPROVE THIS FUNCTION ##############
@@ -16,26 +16,54 @@ from tips.mobility_tips import mobility_tips_function
 
 
 
-def tips_function(processed_bucket, mobile_bucket, data_list): 
-# data_list = [lifestyle_data_key, sleep_data_key, hr_data_key, respiratory_data_key, agitation_data_key] 
+def tips_function(processed_bucket, mobile_bucket, tips_input_data, agitation_tips_function, hr_tips_function): 
+    print('tips input data agitation', tips_input_data['agitation'])
 
-    # def get_data(index, bucket):
-    #     raw = s3.get_object(Bucket=bucket, Key=data_list[index])
-    #     processed_data = raw["Body"]
-    #     readable_data = json.loads(processed_data.read())
-    #     print(Template('Data frm index $index retrieved successfully.'))
-    #     return readable_data
+    def get_data(index, bucket):
+        raw = s3.get_object(Bucket=bucket, Key=tips_input_data[index])
+        processed_data = raw["Body"]
+        readable_data = json.loads(processed_data.read())
+        template_readout = Template('Data from $index retrieved successfully.')
+        print(template_readout.substitute(index=index))
+        return readable_data
 
     try:   
-        lifestyle_data = data_list[0]
-        # sleep_data = get_data(1, mobile_bucket)  
-        # hr_data = get_data(2, processed_bucket)  
-        # respiratory_data = get_data(3, processed_bucket)  
-        # agitation_data = get_data(4, mobile_bucket)
+        agitation_data = get_data('agitation', mobile_bucket)
+        agitation_tips = agitation_tips_function(agitation_data)
+        print('agitation tips', agitation_tips)
+    except Exception as e: 
+        print(e)
+        print('Agitation data unavailable for tips.')
+    
+    try: 
+        hr_data = get_data('heart', mobile_bucket)
+        heart_tips = hr_tips_function(hr_data)
+        print('heart tips data', heart_tips)
+    except Exception as e: 
+        print(e)
+        print('Heart data unavailable for tips.')  
+    
+    # try:   
+    #     sleep = get_data('sleep', mobile_bucket)
+    #     print('sleep tips', sleep)
+    # except Exception as e: 
+    #     print(e)
+    #     print('Sleep data unavailable for tips.')
+    
+    # try:   
+    #     lifestyle = get_data('lifesetyle', mobile_bucket)
+    #     print('lifestyle tips', lifestyle)
+    # except Exception as e: 
+    #     print(e)
+    #     print('Lifestyle data unavailable for tips.')
 
-        lifestyle_tips = lifestyle_tips_function(lifestyle_data)
-        print('this worked.')
-
+    # try:   
+    #     heart = get_data('heart', mobile_bucket)
+    #     print('heart tips', heart)
+    # except Exception as e: 
+    #     print(e)
+    #     print('Heart data unavailable for tips.')
+    
         ############# rank all tips' priorities ############
         ############# write tips to display in main tips section ############
 
