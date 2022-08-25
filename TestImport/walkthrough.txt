@@ -19,6 +19,7 @@ Using it:
         > docker run -p 9000:8080 -v <PATH TO AWS CREDENTIALS> <WHATEVER YOU WANT TO NAME YOUR IMAGE>
         For example: 
             > docker run -p 9000:8080 -v c:\Users\joshi\.aws\credentials:/root/.aws/credentials imports
+            > docker run -p 9000:8080 -v ~/.aws/credentials:/root/.aws/credentials imports
     Copy the following link to Postman as a POST request: 
         > http://localhost:9000/2015-03-31/functions/function/invocations
         Then copy the code from an event file and enter it into the body of the postman request 
@@ -59,3 +60,20 @@ Using it:
     3) MAKE SURE WHEN YOU PUSH THAT YOU ASSIGN /tmp AS WORKDIR IN AWS!!!!! OTHERWISE, IT WON'T WORK. 
 
 Official documentation: https://docs.aws.amazon.com/lambda/latest/dg/images-create.html 
+
+
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowPublicRead",
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "*"
+			},
+			"Action": "s3:GetObject",
+			"Resource": "arn:aws:s3:::raw-adiona-watch-app-data/*"
+		}
+	]
+}

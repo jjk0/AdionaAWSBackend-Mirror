@@ -3,3 +3,10 @@ pandas
 numpy
 scikit-learn
 timesmash
+# pyActigraphy
+# matplotlib
+# scipy
+# seaborn
+# bitstring
+# argparse
+# tables
