@@ -9,6 +9,8 @@ from string import Template
 from helpers.tips import tips_function
 from helpers.agitation_tips import agitation_tips_function
 from helpers.heart_tips import hr_tips_function
+from helpers.lifestyle_tips import lifestyle_tips_function
+from helpers.mobility_tips import mobility_tips_function
 # from helpers.create_agitation_master import create_agitation_master_file
 
 
@@ -66,12 +68,14 @@ def lambda_handler(event, context):
     sleep_file_key = create_string('sleepData.json')
     lifestyle_file_key = create_string('lifestyleData.json')
     heart_file_key = create_string('hrData.json')
+    mobility_file_key = create_string('mobilityData.json')
     
     tips_input_data={
        'agitation': master_agitation_file_key,
        'sleep': sleep_file_key,
        'lifestyle': lifestyle_file_key,
-       'heart': heart_file_key
+       'heart': heart_file_key,
+       'mobility': mobility_file_key
     }
 
     # try: 
@@ -119,7 +123,9 @@ def lambda_handler(event, context):
             processed_bucket, mobile_bucket, 
             tips_input_data, 
             agitation_tips_function,
-            hr_tips_function
+            hr_tips_function,
+            lifestyle_tips_function,
+            mobility_tips_function
         )
         print('tips results', tips_results)
         

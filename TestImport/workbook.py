@@ -1,7 +1,7 @@
 from calendar import week
 import datetime
 from string import Template
-import numpy
+# import numpy
 
 # data = {'hr': 
 #   [
@@ -19,20 +19,36 @@ import numpy
   #  ]
   # }
 
-data = {"heart_rate": 
-    {"value": [50,54,76,90,82,55,60,62,65], 
-     "timestamps": [
-       1658118642.0,
-       1658507800.0,
-       1659901000.0,
-       1659902000.0,
-       1659903000.0,
-       1659904000.0,
-       1659905000.0,
-       1659906000.0,
-       1659907000.0,
-       1659907800.0
-      ]
+# data = {"heart_rate": 
+#     {"value": [50,54,76,90,82,55,60,62,65], 
+#      "timestamps": [
+#        1658118642.0,
+#        1658507800.0,
+#        1659901000.0,
+#        1659902000.0,
+#        1659903000.0,
+#        1659904000.0,
+#        1659905000.0,
+#        1659906000.0,
+#        1659907000.0,
+#        1659907800.0
+#       ]
+#     }
+# }
+
+# data = {
+#     "step_count": {
+#         "value": [10600, 10603, 10605, 10600, 10603, 10605, 10600, 10603, 10605, 10600, 10603, 10605, 10600, 10603, 10605], 
+#         "timestamps": [16599622.0, 16600222.0, 16601622.0, 16602622.0, 16603222.0, 16605622.0, 16606622.0, 16607222.0, 16608622.0, 16609622.0, 16610222.0, 16611622.0, 16613622.0, 16614222.0, 16614622.0]}, 
+#         "calories": {"value": [675, 674, 672], 
+#         "timestamps": [1655018700.0, 1655018700.0, 1655018701.0]
+#     }
+# }
+
+data = {
+    "mobility": {
+        "fall_resolution": [0, 1], 
+        "timestamps": [16614222.0, 16614622.0], 
     }
 }
 
@@ -56,94 +72,195 @@ past_months_array = []
 
 # convert datetime unix strings to readable datetime object
 datetime_timestamps = []
-for unix in data['heart_rate']['timestamps']:
+for unix in data['mobility']['timestamps']:
   str_datetime_obj = datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%dT%H:%M:%S')
   datetime_obj = datetime.datetime.strptime(str_datetime_obj, '%Y-%m-%dT%H:%M:%S')
   datetime_timestamps.append(datetime_obj)
 
 dict_values = {}
 for key in datetime_timestamps:
-    for value in data['heart_rate']['value']:
+    for value in data['mobility']['fall_resolution']:
         dict_values[key] = value
-        data['heart_rate']['value'].remove(value)
+        data['mobility']['fall_resolution'].remove(value)
         break  
   
 print(dict_values)
 # get all hr values in each time range  
-def hr_in_range(beginning_window, ending_window):
+def falls_in_range(beginning_window, ending_window):
   list = [] 
   for timestamp in dict_values.keys(): 
     if timestamp > beginning_window and timestamp <= ending_window:
       list.append(dict_values[timestamp])
   return list
 
-hr_in_past_day_time = hr_in_range(
+falls_in_past_day_time = falls_in_range(
   past_day_time, 
   current_time, 
 )
 
-hr_in_past_two_days = hr_in_range(
+falls_in_past_two_days = falls_in_range(
   past_two_days_time, 
   current_time, 
 )
 
-hr_in_past_week = hr_in_range(
+falls_in_past_week = falls_in_range(
   past_week_time, 
   current_time, 
 )
 
-hr_in_past_month = hr_in_range(
+falls_in_past_month = falls_in_range(
   past_month_time, 
   current_time, 
 )
 
 # print('test values', hr_in_past_day_time, hr_in_past_two_days, hr_in_past_week, hr_in_past_month)
 
-def agitation_over_time(hr_in_period, hr_over_time, time_period):
-  avg_hr = sum(hr_in_period)/len(hr_in_period)
-  avg_long_term_hr = sum(hr_over_time)/len(hr_over_time)
+def agitation_over_time(falls_in_period, falls_over_time, time_period):
+  try: 
+    avg_falls = sum(falls_in_period)/len(falls_in_period)
+  except: 
+    avg_falls = 1
+  try: 
+    avg_long_term_falls = sum(falls_over_time)/len(falls_over_time)
+  except: 
+    avg_long_term_falls = 1
   # sum = 0 
   # for value in hr_over_time:
   #   diff = abs(value - avg_long_term_hr) * abs(value - avg_long_term_hr)
   #   sum = sum + diff 
-  st_dev_hr = numpy.std(hr_over_time)
+  # st_dev_falls = numpy.std(falls_over_time)
 
-  template_str_more = Template("Heartrate is higher than normal compared to $time_period.")
-  template_str_less = Template("Heartrate is lower than normal compared to $time_period.")
-  template_str_normal = Template("Heartrate is looking normal compared to $time_period.")
+  template_str_more = Template("falls is higher than normal compared to $time_period.")
+  template_str_less = Template("falls is lower than normal compared to $time_period.")
+  template_str_normal = Template("falls is looking normal compared to $time_period.")
 
-  if avg_hr > (avg_long_term_hr + 1.68 * st_dev_hr):
-    hr_level_tip = {
+  if avg_falls > (avg_long_term_falls):
+  # if avg_falls > (avg_long_term_falls):
+
+    falls_level_tip = {
       'message': template_str_more.substitute(time_period=time_period),
       'importance': 2,
       'link': "https://www.nia.nih.gov/health/heart-health-and-aging"
     }
-    return hr_level_tip
+    return falls_level_tip
 
-  elif avg_hr < (avg_long_term_hr - 1.68 * st_dev_hr):
-    hr_level_tip = {
+  elif avg_falls < (avg_long_term_falls):
+  # elif avg_falls < (avg_long_term_falls):
+
+    falls_level_tip = {
       'message': template_str_less.substitute(time_period=time_period),
       'importance': 2,
       'link': "https://www.nia.nih.gov/health/heart-health-and-aging"
     }
-    return hr_level_tip
+    return falls_level_tip
 
   else:
-    hr_level_tip = {
+    falls_level_tip = {
       'message': template_str_normal.substitute(time_period=time_period),
       'importance': 0,
       'link': "https://www.nia.nih.gov/health/heart-health-and-aging"
     } 
-  return hr_level_tip
+  return falls_level_tip
 
 
 # # results for heartrate level tip 
-today_hr_vs_yesterday = agitation_over_time(hr_in_past_day_time, hr_in_past_two_days, "yesterday")
-past_two_days_hr_vs_past_week = agitation_over_time(hr_in_past_two_days, hr_in_past_week, "the past week") # 2/7 
-past_week_hr_vs_past_month = agitation_over_time(hr_in_past_week, hr_in_past_month, "week")
-print('today agitation', today_hr_vs_yesterday)
-print('past two day agitation', past_two_days_hr_vs_past_week)
-print('this week agitation', past_week_hr_vs_past_month)
+today_falls_vs_yesterday = agitation_over_time(falls_in_past_day_time, falls_in_past_two_days, "yesterday")
+past_two_days_falls_vs_past_week = agitation_over_time(falls_in_past_two_days, falls_in_past_week, "the past week") # 2/7 
+past_week_falls_vs_past_month = agitation_over_time(falls_in_past_week, falls_in_past_month, "week")
+print('today falls', today_falls_vs_yesterday)
+print('past two day falls', past_two_days_falls_vs_past_week)
+print('this week falls', past_week_falls_vs_past_month)
+
+# # convert datetime unix strings to readable datetime object
+# datetime_timestamps = []
+# for unix in data['heart_rate']['timestamps']:
+#   str_datetime_obj = datetime.datetime.fromtimestamp(unix).strftime('%Y-%m-%dT%H:%M:%S')
+#   datetime_obj = datetime.datetime.strptime(str_datetime_obj, '%Y-%m-%dT%H:%M:%S')
+#   datetime_timestamps.append(datetime_obj)
+
+# dict_values = {}
+# for key in datetime_timestamps:
+#     for value in data['heart_rate']['value']:
+#         dict_values[key] = value
+#         data['heart_rate']['value'].remove(value)
+#         break  
+  
+# print(dict_values)
+# # get all hr values in each time range  
+# def hr_in_range(beginning_window, ending_window):
+#   list = [] 
+#   for timestamp in dict_values.keys(): 
+#     if timestamp > beginning_window and timestamp <= ending_window:
+#       list.append(dict_values[timestamp])
+#   return list
+
+# hr_in_past_day_time = hr_in_range(
+#   past_day_time, 
+#   current_time, 
+# )
+
+# hr_in_past_two_days = hr_in_range(
+#   past_two_days_time, 
+#   current_time, 
+# )
+
+# hr_in_past_week = hr_in_range(
+#   past_week_time, 
+#   current_time, 
+# )
+
+# hr_in_past_month = hr_in_range(
+#   past_month_time, 
+#   current_time, 
+# )
+
+# # print('test values', hr_in_past_day_time, hr_in_past_two_days, hr_in_past_week, hr_in_past_month)
+
+# def agitation_over_time(hr_in_period, hr_over_time, time_period):
+#   avg_hr = sum(hr_in_period)/len(hr_in_period)
+#   avg_long_term_hr = sum(hr_over_time)/len(hr_over_time)
+#   # sum = 0 
+#   # for value in hr_over_time:
+#   #   diff = abs(value - avg_long_term_hr) * abs(value - avg_long_term_hr)
+#   #   sum = sum + diff 
+#   st_dev_hr = numpy.std(hr_over_time)
+
+#   template_str_more = Template("Heartrate is higher than normal compared to $time_period.")
+#   template_str_less = Template("Heartrate is lower than normal compared to $time_period.")
+#   template_str_normal = Template("Heartrate is looking normal compared to $time_period.")
+
+#   if avg_hr > (avg_long_term_hr + 1.68 * st_dev_hr):
+#     hr_level_tip = {
+#       'message': template_str_more.substitute(time_period=time_period),
+#       'importance': 2,
+#       'link': "https://www.nia.nih.gov/health/heart-health-and-aging"
+#     }
+#     return hr_level_tip
+
+#   elif avg_hr < (avg_long_term_hr - 1.68 * st_dev_hr):
+#     hr_level_tip = {
+#       'message': template_str_less.substitute(time_period=time_period),
+#       'importance': 2,
+#       'link': "https://www.nia.nih.gov/health/heart-health-and-aging"
+#     }
+#     return hr_level_tip
+
+#   else:
+#     hr_level_tip = {
+#       'message': template_str_normal.substitute(time_period=time_period),
+#       'importance': 0,
+#       'link': "https://www.nia.nih.gov/health/heart-health-and-aging"
+#     } 
+#   return hr_level_tip
+
+
+# # # results for heartrate level tip 
+# today_hr_vs_yesterday = agitation_over_time(hr_in_past_day_time, hr_in_past_two_days, "yesterday")
+# past_two_days_hr_vs_past_week = agitation_over_time(hr_in_past_two_days, hr_in_past_week, "the past week") # 2/7 
+# past_week_hr_vs_past_month = agitation_over_time(hr_in_past_week, hr_in_past_month, "week")
+# print('today agitation', today_hr_vs_yesterday)
+# print('past two day agitation', past_two_days_hr_vs_past_week)
+# print('this week agitation', past_week_hr_vs_past_month)
 
 # # longer term trends 
 # if (today_hr_vs_yesterday['importance'] > past_two_days_hr_vs_past_week['importance'] 

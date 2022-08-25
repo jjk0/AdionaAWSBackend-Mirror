@@ -23,5 +23,10 @@
         "message": "Here is THE MESSAGEEEEEE. ", 
         "importance": 0, 
         "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
+    },
+    "mobility_tips": {
+        "message": "Here is THE MESSAGEEEEEE. ", 
+        "importance": 0, 
+        "link": "https://www.alz.org/illinois/helping_you/support_groups/caregiver_support_groups"
     }
 }
