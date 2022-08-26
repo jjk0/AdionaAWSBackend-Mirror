@@ -11,9 +11,16 @@ s3 = boto3.resource('s3')
 pinpoint_client = boto3.client('pinpoint')
 
 
-PATIENT_HEALTH_DATA_TABLE_NAME = 'PatientWatchData-o76lfmasxnec5ftzmzuynnxuhi-dev'
-PATIENT_AGITATION_TABLE_NAME = 'PatientAgitation-o76lfmasxnec5ftzmzuynnxuhi-dev'
-PATIENT_TIPS_TABLE_NAME = 'PatientTips-o76lfmasxnec5ftzmzuynnxuhi-dev'
+# PATIENT_HEALTH_DATA_TABLE_NAME = 'PatientWatchData-o76lfmasxnec5ftzmzuynnxuhi-dev'
+# PATIENT_HEALTH_DATA_TABLE_NAME = 'PatientWatchData-dgii6riv3jhpvnp5nzl4age5pq-dev'
+PATIENT_HEALTH_DATA_TABLE_NAME = 'PatientWatchData-5o6t4k2w7jgxvj2hpntqlyk5wi-dev'
+# PATIENT_AGITATION_TABLE_NAME = 'PatientAgitation-o76lfmasxnec5ftzmzuynnxuhi-dev'
+# PATIENT_AGITATION_TABLE_NAME = 'PatientAgitation-dgii6riv3jhpvnp5nzl4age5pq-dev'
+PATIENT_AGITATION_TABLE_NAME = 'PatientAgitation-5o6t4k2w7jgxvj2hpntqlyk5wi-dev'
+# PATIENT_TIPS_TABLE_NAME = 'PatientTips-o76lfmasxnec5ftzmzuynnxuhi-dev'
+# PATIENT_TIPS_TABLE_NAME = 'PatientTips-dgii6riv3jhpvnp5nzl4age5pq-dev'
+PATIENT_TIPS_TABLE_NAME = 'PatientTips-5o6t4k2w7jgxvj2hpntqlyk5wi-dev'
+
 
 dynamodb = boto3.resource('dynamodb')
 patientHealthDataTable = dynamodb.Table(PATIENT_HEALTH_DATA_TABLE_NAME)
@@ -82,14 +89,15 @@ def lambda_handler(event, context):
       for idx, val in enumerate(heart_rate.get('value')):
         timestamp = int(heart_rate['timestamps'][idx])
         insert__patient_health_data_in_table(patientId, str(timestamp), val, 'heartRate')
-
-
+        
+        
     # Processed lifestyleData file
     elif key.endswith(LIFESTYLE_DATA):
       content = get_file_content(bucket, key)
 
       step_count = content.get('step_count')
       calories = content.get('calories')
+      print('here are steps:', step_count, 'here are calories:', calories)
       
       for idx, val in enumerate(step_count.get('value')):
         timestamp = int(step_count['timestamps'][idx])
@@ -104,106 +112,107 @@ def lambda_handler(event, context):
     else:
       print("Skipping file")
 
-  endpoints = pinpoint_client.get_user_endpoints(
-    ApplicationId='530ffa0302914c9aad10fd138d436f45',
-    UserId='90567bb6-1d30-4c40-a14f-d00696c33c82'
-  )
-  print("Pinpoint endpoints: ", endpoints)
+  # endpoints = pinpoint_client.get_user_endpoints(
+  #   ApplicationId='530ffa0302914c9aad10fd138d436f45',
+  #   UserId='90567bb6-1d30-4c40-a14f-d00696c33c82'
+  # )
+  # print("Pinpoint endpoints: ", endpoints)
 
 
 
 def get_file_content(bucket, key):
     obj = s3.Object(bucket, key)
     data = obj.get()['Body'].read().decode('utf-8') 
+    print('this runs')
     return json.loads(data)
 
-if tips==True: 
+# if tips==True: 
 
-  pinpoint_client.send_messages(
-      ApplicationId='530ffa0302914c9aad10fd138d436f45',
-      MessageRequest={
-          'Addresses': {
-              'string': {
-                  'BodyOverride': 'string',
-                  'ChannelType': 'APNS',
-                  'Context': {
-                      'string': 'string'
-                  },
-                  'RawContent': 'string',
-                  'Substitutions': {
-                      'string': [
-                          'string',
-                      ]
-                  },
-                  'TitleOverride': 'string'
-              }
-          },
-          'Context': {
-              'string': 'string'
-          },
-          'Endpoints': {
-              'string': {
-                  'BodyOverride': 'string',
-                  'Context': {
-                      'string': 'string'
-                  },
-                  'RawContent': 'string',
-                  'Substitutions': {
-                      'string': [
-                          'string',
-                      ]
-                  },
-                  'TitleOverride': 'string'
-              }
-          },
-          'MessageConfiguration': {
-              'APNSMessage': {
-                  'APNSPushType': 'string',
-                  'Action': 'OPEN_APP'|'DEEP_LINK'|'URL',
-                  'Badge': 123,
-                  'Body': 'hello world',
-                  'Category': 'string',
-                  'CollapseId': 'string',
-                  'Data': {
-                      'string': 'string'
-                  },
-                  'MediaUrl': 'string',
-                  'PreferredAuthenticationMethod': 'string',
-                  'Priority': 'string',
-                  'RawContent': 'string',
-                  'SilentPush': True|False,
-                  'Sound': 'string',
-                  'Substitutions': {
-                      'string': [
-                          'string',
-                      ]
-                  },
-                  'ThreadId': 'string',
-                  'TimeToLive': 123,
-                  'Title': 'string',
-                  'Url': 'string'
-              },
-          },
-          'TemplateConfiguration': {
-              'PushTemplate': {
-                  'Name': 'string',
-                  'Version': 'string'
-              },
-          },
-          'TraceId': 'string'
-      }
-  )
+#   pinpoint_client.send_messages(
+#       ApplicationId='530ffa0302914c9aad10fd138d436f45',
+#       MessageRequest={
+#           'Addresses': {
+#               'string': {
+#                   'BodyOverride': 'string',
+#                   'ChannelType': 'APNS',
+#                   'Context': {
+#                       'string': 'string'
+#                   },
+#                   'RawContent': 'string',
+#                   'Substitutions': {
+#                       'string': [
+#                           'string',
+#                       ]
+#                   },
+#                   'TitleOverride': 'string'
+#               }
+#           },
+#           'Context': {
+#               'string': 'string'
+#           },
+#           'Endpoints': {
+#               'string': {
+#                   'BodyOverride': 'string',
+#                   'Context': {
+#                       'string': 'string'
+#                   },
+#                   'RawContent': 'string',
+#                   'Substitutions': {
+#                       'string': [
+#                           'string',
+#                       ]
+#                   },
+#                   'TitleOverride': 'string'
+#               }
+#           },
+#           'MessageConfiguration': {
+#               'APNSMessage': {
+#                   'APNSPushType': 'string',
+#                   'Action': 'OPEN_APP'|'DEEP_LINK'|'URL',
+#                   'Badge': 123,
+#                   'Body': 'hello world',
+#                   'Category': 'string',
+#                   'CollapseId': 'string',
+#                   'Data': {
+#                       'string': 'string'
+#                   },
+#                   'MediaUrl': 'string',
+#                   'PreferredAuthenticationMethod': 'string',
+#                   'Priority': 'string',
+#                   'RawContent': 'string',
+#                   'SilentPush': True|False,
+#                   'Sound': 'string',
+#                   'Substitutions': {
+#                       'string': [
+#                           'string',
+#                       ]
+#                   },
+#                   'ThreadId': 'string',
+#                   'TimeToLive': 123,
+#                   'Title': 'string',
+#                   'Url': 'string'
+#               },
+#           },
+#           'TemplateConfiguration': {
+#               'PushTemplate': {
+#                   'Name': 'string',
+#                   'Version': 'string'
+#               },
+#           },
+#           'TraceId': 'string'
+#       }
+  # )
 
 def insert__patient_health_data_in_table(patientId, time, val, key):
-  old_item = get__patient_health_data(patientId, time)
+  # old_item = get__patient_health_data(patientId, time)
 
-  if old_item:
-    old_item[key] = val
+  # if old_item:
+  #   old_item[key] = val
 
-    patientHealthDataTable.put_item(Item=old_item)
+  #   patientHealthDataTable.put_item(Item=old_item)
 
-  else:
-    patientHealthDataTable.put_item(Item= {'id': patientId, 'time': time, key: val})
+  # else:
+  patientHealthDataTable.put_item(Item= {'id': patientId, 'time': time, key: val})
 
 
 def insert__patient_agitation_data_in_table(patientId, time):
